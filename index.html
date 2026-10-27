@@ -1,0 +1,323 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La Ofrenda Digital — Virtual Memorial Builder</title>
+  <meta name="description" content="Build a heartfelt digital ofrenda to honor loved ones who have passed. Powered by local open-source AI via Ollama — completely private, offline, and yours forever." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <canvas id="particles-canvas"></canvas>
+
+  <section id="hero-section" class="hero">
+    <div class="papel-picado-row">
+      <div class="papel" style="--clr:#e67e22"></div>
+      <div class="papel" style="--clr:#8e44ad"></div>
+      <div class="papel" style="--clr:#e74c3c"></div>
+      <div class="papel" style="--clr:#f39c12"></div>
+      <div class="papel" style="--clr:#27ae60"></div>
+      <div class="papel" style="--clr:#3498db"></div>
+      <div class="papel" style="--clr:#e67e22"></div>
+      <div class="papel" style="--clr:#8e44ad"></div>
+      <div class="papel" style="--clr:#e74c3c"></div>
+      <div class="papel" style="--clr:#f39c12"></div>
+      <div class="papel" style="--clr:#27ae60"></div>
+      <div class="papel" style="--clr:#3498db"></div>
+      <div class="papel" style="--clr:#e67e22"></div>
+    </div>
+
+    <div class="hero-content">
+      <div class="skull-icon">💀</div>
+      <h1 class="hero-title">La Ofrenda Digital</h1>
+      <p class="hero-subtitle">Honor the ones you have loved. Keep their stories alive.</p>
+      <p class="hero-desc">
+        A private, offline memorial builder powered by local open-source AI.<br/>
+        Your memories stay on your machine — always.
+      </p>
+      <div class="hero-cta-group">
+        <button id="btn-start" class="btn-primary" onclick="showSection('setup-section')">
+          <span>✨</span> Begin Your Ofrenda
+        </button>
+        <button id="btn-view-ofrendas" class="btn-secondary" onclick="showSection('gallery-section'); renderGallery()">
+          <span>🕯️</span> View Ofrendas
+        </button>
+      </div>
+      <div class="ollama-badge">
+        <div class="badge-dot" id="ollama-dot"></div>
+        <span id="ollama-status-text">Checking Ollama connection...</span>
+      </div>
+    </div>
+
+    <div class="hero-candles">
+      <div class="candle-wrap"><div class="candle"><div class="flame"></div></div></div>
+      <div class="candle-wrap large"><div class="candle"><div class="flame"></div></div></div>
+      <div class="candle-wrap"><div class="candle"><div class="flame"></div></div></div>
+    </div>
+
+    <div class="marigold-row">🌼🌸🌼🌸🌼🌸🌼🌸🌼🌸🌼🌸🌼</div>
+  </section>
+
+  <section id="setup-section" class="app-section hidden">
+    <button class="back-btn" onclick="showSection('hero-section')">← Back</button>
+    <div class="section-header">
+      <h2>🕯️ Add Your Loved One</h2>
+      <p>Tell us about the person you wish to remember</p>
+    </div>
+    <div class="form-card">
+      <div class="photo-upload-area" id="photo-upload-area">
+        <input type="file" id="photo-input" accept="image/*" hidden />
+        <div class="photo-preview" id="photo-preview">
+          <div class="photo-placeholder" onclick="document.getElementById('photo-input').click()">
+            <span class="placeholder-icon">📷</span>
+            <span>Click to add photo</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label for="person-name">Full Name <span class="req">*</span></label>
+          <input type="text" id="person-name" placeholder="e.g. Maria Elena Garcia" maxlength="80" />
+        </div>
+        <div class="form-group">
+          <label for="birth-year">Born</label>
+          <input type="number" id="birth-year" placeholder="1940" min="1800" max="2025" />
+        </div>
+        <div class="form-group">
+          <label for="death-year">Passed</label>
+          <input type="number" id="death-year" placeholder="2018" min="1800" max="2025" />
+        </div>
+        <div class="form-group full-width">
+          <label for="relationship">Relationship</label>
+          <select id="relationship">
+            <option value="">Select...</option>
+            <option value="grandmother">Grandmother (Abuela)</option>
+            <option value="grandfather">Grandfather (Abuelo)</option>
+            <option value="mother">Mother (Mama)</option>
+            <option value="father">Father (Papa)</option>
+            <option value="sister">Sister (Hermana)</option>
+            <option value="brother">Brother (Hermano)</option>
+            <option value="aunt">Aunt (Tia)</option>
+            <option value="uncle">Uncle (Tio)</option>
+            <option value="friend">Dear Friend</option>
+            <option value="partner">Partner / Spouse</option>
+            <option value="child">Child</option>
+            <option value="other">Other beloved person</option>
+          </select>
+        </div>
+        <div class="form-group full-width">
+          <label for="personality">Describe their personality and what you loved about them</label>
+          <textarea id="personality" rows="3" placeholder="e.g. She was warm and funny, always cooking tamales, loved telenovelas and her garden of roses..."></textarea>
+        </div>
+      </div>
+      <button class="btn-primary full-width" onclick="validateAndNext()">
+        Next: Add Offerings <span>→</span>
+      </button>
+    </div>
+  </section>
+
+  <section id="offerings-section" class="app-section hidden">
+    <button class="back-btn" onclick="showSection('setup-section')">← Back</button>
+    <div class="section-header">
+      <h2>🌼 Their Favorite Things</h2>
+      <p>Place offerings on the ofrenda — foods, songs, objects that remind you of them</p>
+    </div>
+    <div class="offerings-grid">
+      <div class="offering-card">
+        <div class="offering-icon">🍽️</div>
+        <h3>Favorite Foods and Drinks</h3>
+        <div class="tag-input-wrap">
+          <div class="tags-container" id="food-tags"></div>
+          <input type="text" id="food-input" placeholder="Type food name + Enter" />
+        </div>
+        <div class="quick-add">
+          <span onclick="addTag('food','Tamales')">Tamales</span>
+          <span onclick="addTag('food','Pan de muerto')">Pan de muerto</span>
+          <span onclick="addTag('food','Mole')">Mole</span>
+          <span onclick="addTag('food','Mezcal')">Mezcal</span>
+          <span onclick="addTag('food','Chocolate')">Chocolate</span>
+          <span onclick="addTag('food','Coffee')">Coffee</span>
+        </div>
+      </div>
+      <div class="offering-card">
+        <div class="offering-icon">🎵</div>
+        <h3>Favorite Songs and Artists</h3>
+        <div class="tag-input-wrap">
+          <div class="tags-container" id="song-tags"></div>
+          <input type="text" id="song-input" placeholder="Song or artist name + Enter" />
+        </div>
+        <div class="quick-add">
+          <span onclick="addTag('song','Cielito Lindo')">Cielito Lindo</span>
+          <span onclick="addTag('song','Besame Mucho')">Besame Mucho</span>
+          <span onclick="addTag('song','La Llorona')">La Llorona</span>
+          <span onclick="addTag('song','Guantanamera')">Guantanamera</span>
+        </div>
+      </div>
+      <div class="offering-card">
+        <div class="offering-icon">🎁</div>
+        <h3>Meaningful Objects</h3>
+        <div class="tag-input-wrap">
+          <div class="tags-container" id="object-tags"></div>
+          <input type="text" id="object-input" placeholder="e.g. Rosary, sewing kit, hat..." />
+        </div>
+        <div class="quick-add">
+          <span onclick="addTag('object','Rosary')">Rosary</span>
+          <span onclick="addTag('object','Old photos')">Old photos</span>
+          <span onclick="addTag('object','Garden tools')">Garden tools</span>
+          <span onclick="addTag('object','Favorite book')">Favorite book</span>
+        </div>
+      </div>
+    </div>
+    <div class="memory-card">
+      <div class="memory-header">
+        <span class="memory-icon">📖</span>
+        <div>
+          <h3>A Memory to Share</h3>
+          <p>Write a favorite memory, story, or moment you shared together</p>
+        </div>
+      </div>
+      <textarea id="memory-text" rows="5" placeholder="One autumn afternoon, she taught me how to fold the masa just right..."></textarea>
+    </div>
+    <button class="btn-primary full-width" onclick="generateOfrenda()">
+      <span>🤖</span> Generate AI Remembrance and Build Ofrenda
+    </button>
+  </section>
+
+  <section id="loading-section" class="app-section hidden">
+    <div class="loading-center">
+      <div class="loading-candles">
+        <div class="candle-wrap"><div class="candle"><div class="flame"></div></div></div>
+        <div class="candle-wrap large"><div class="candle"><div class="flame"></div></div></div>
+        <div class="candle-wrap"><div class="candle"><div class="flame"></div></div></div>
+      </div>
+      <div class="loading-skull">💀</div>
+      <h2 class="loading-title">Weaving the remembrance...</h2>
+      <p class="loading-subtitle" id="loading-msg">Local AI is crafting a tribute from the heart</p>
+      <div class="loading-bar-wrap">
+        <div class="loading-bar" id="loading-bar"></div>
+      </div>
+      <p class="loading-note">🔒 Running locally via Ollama — your memories never leave your device</p>
+    </div>
+  </section>
+
+  <section id="ofrenda-section" class="app-section hidden">
+    <button class="back-btn" onclick="showSection('hero-section')">← Back to Home</button>
+    <div class="papel-picado-row">
+      <div class="papel" style="--clr:#e67e22"></div>
+      <div class="papel" style="--clr:#8e44ad"></div>
+      <div class="papel" style="--clr:#e74c3c"></div>
+      <div class="papel" style="--clr:#f39c12"></div>
+      <div class="papel" style="--clr:#27ae60"></div>
+      <div class="papel" style="--clr:#3498db"></div>
+      <div class="papel" style="--clr:#e67e22"></div>
+      <div class="papel" style="--clr:#8e44ad"></div>
+      <div class="papel" style="--clr:#e74c3c"></div>
+      <div class="papel" style="--clr:#f39c12"></div>
+    </div>
+    <div class="altar-container" id="altar-container">
+      <div class="altar-tier top-tier">
+        <div class="altar-candle left"><div class="candle"><div class="flame"></div></div></div>
+        <div class="portrait-frame" id="ofrenda-portrait">
+          <div class="portrait-inner">
+            <img id="portrait-img" src="" alt="Portrait" style="display:none" />
+            <div id="portrait-initial" class="portrait-initial"></div>
+          </div>
+          <div class="frame-flowers">🌼🌸🌼</div>
+        </div>
+        <div class="altar-candle right"><div class="candle"><div class="flame"></div></div></div>
+      </div>
+      <div class="person-name-display" id="ofrenda-name"></div>
+      <div class="person-years" id="ofrenda-years"></div>
+      <div class="person-relationship" id="ofrenda-relationship"></div>
+      <div class="marigold-divider">🌼 ✦ 🌸 ✦ 🌼 ✦ 🌸 ✦ 🌼</div>
+      <div class="remembrance-card">
+        <div class="remembrance-label">✨ A Remembrance</div>
+        <div class="remembrance-text" id="remembrance-text"></div>
+        <button class="regenerate-btn" onclick="regenerateRemembrance()">🔄 Regenerate with AI</button>
+      </div>
+      <div class="offerings-display">
+        <div class="offering-shelf" id="food-shelf">
+          <div class="shelf-label">🍽️ Foods and Drinks</div>
+          <div class="shelf-items" id="food-items-display"></div>
+        </div>
+        <div class="offering-shelf" id="song-shelf">
+          <div class="shelf-label">🎵 Songs and Artists</div>
+          <div class="shelf-items" id="song-items-display"></div>
+        </div>
+        <div class="offering-shelf" id="object-shelf">
+          <div class="shelf-label">🎁 Sacred Objects</div>
+          <div class="shelf-items" id="object-items-display"></div>
+        </div>
+      </div>
+      <div class="memory-display" id="memory-display" style="display:none">
+        <div class="memory-display-label">📖 A Memory</div>
+        <div class="memory-display-text" id="memory-display-text"></div>
+      </div>
+      <div class="bottom-candles">
+        <div class="candle-wrap sm"><div class="candle"><div class="flame"></div></div></div>
+        <div class="candle-wrap"><div class="candle"><div class="flame"></div></div></div>
+        <div class="candle-wrap sm"><div class="candle"><div class="flame"></div></div></div>
+        <div class="candle-wrap"><div class="candle"><div class="flame"></div></div></div>
+        <div class="candle-wrap sm"><div class="candle"><div class="flame"></div></div></div>
+      </div>
+      <div class="marigold-path">🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼🌼</div>
+    </div>
+    <div class="ofrenda-actions">
+      <button class="btn-primary" onclick="saveOfrenda()">💾 Save Ofrenda</button>
+      <button class="btn-secondary" onclick="printOfrenda()">🖨️ Print / Export</button>
+      <button class="btn-secondary" onclick="showSection('setup-section')">➕ Add Another</button>
+      <button class="btn-secondary" id="audio-btn" onclick="toggleAudio()">🔇 Enable Ambient Sound</button>
+    </div>
+  </section>
+
+  <section id="gallery-section" class="app-section hidden">
+    <button class="back-btn" onclick="showSection('hero-section')">← Back</button>
+    <div class="section-header">
+      <h2>🕯️ Your Ofrendas</h2>
+      <p>All saved memorials — stored locally in your browser</p>
+    </div>
+    <div class="gallery-grid" id="gallery-grid">
+      <div class="gallery-empty" id="gallery-empty">
+        <span>🕯️</span>
+        <p>No ofrendas yet. Create your first memorial.</p>
+        <button class="btn-primary" onclick="showSection('setup-section')">Begin</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal-overlay hidden" id="candle-modal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal('candle-modal')">✕</button>
+      <h2 class="modal-title">🕯️ Light a Candle</h2>
+      <p class="modal-subtitle">A moment of remembrance</p>
+      <div class="ceremony-candles">
+        <div class="ceremony-candle" onclick="lightCandle(this)">
+          <div class="c-candle unlit"><div class="c-flame hidden"></div></div>
+          <div class="c-label">Hope</div>
+        </div>
+        <div class="ceremony-candle" onclick="lightCandle(this)">
+          <div class="c-candle unlit"><div class="c-flame hidden"></div></div>
+          <div class="c-label">Memory</div>
+        </div>
+        <div class="ceremony-candle" onclick="lightCandle(this)">
+          <div class="c-candle unlit"><div class="c-flame hidden"></div></div>
+          <div class="c-label">Love</div>
+        </div>
+        <div class="ceremony-candle" onclick="lightCandle(this)">
+          <div class="c-candle unlit"><div class="c-flame hidden"></div></div>
+          <div class="c-label">Peace</div>
+        </div>
+      </div>
+      <p class="ceremony-msg" id="ceremony-msg">Click a candle to light it...</p>
+    </div>
+  </div>
+
+  <button class="fab-candle" onclick="openModal('candle-modal')" title="Light a Candle">🕯️</button>
+
+  <script src="app.js"></script>
+</body>
+</html>
