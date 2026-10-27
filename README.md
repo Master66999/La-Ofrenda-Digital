@@ -1,4 +1,4 @@
-﻿# 💀 La Ofrenda Digital
+# 💀 La Ofrenda Digital
 ### *A Virtual Memorial Builder for Día de los Muertos*
 
 <p align="center">
@@ -266,5 +266,4 @@ This project is licensed under the **MIT License**.
 <p align="center">
   Made with 🌼 and candlelight &nbsp;·&nbsp; <em>In memory of all those we carry in our hearts</em>
 </p>
-#   L a - O f r e n d a - D i g i t a l  
- 
+#
